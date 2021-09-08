@@ -1,4 +1,10 @@
+/* eslint-disable react/no-danger */
 import { GetStaticPaths, GetStaticProps } from 'next';
+import Prismic from '@prismicio/client';
+import { useRouter } from 'next/router';
+import { RichText } from 'prismic-dom';
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 
 import { getPrismicClient } from '../../services/prismic';
 
@@ -26,19 +32,53 @@ interface PostProps {
   post: Post;
 }
 
-export default function Post() {
-  // TODO
+export default function Post({ post }: PostProps) {
+  const { isFallback } = useRouter();
+  if (isFallback)
+    return <div className={commonStyles.content}>Carregando...</div>;
+
+  return (
+    <article className={commonStyles.content}>
+      <img
+        src={post.data.banner.url}
+        alt={post.data.title}
+        className={styles.banner}
+      />
+      <main className={styles.content}>
+        <h1>{post.data.title}</h1>
+        <div className={styles.info}>
+          <time>
+            {format(new Date(post.first_publication_date), 'dd MMM yyyy', {
+              locale: ptBR,
+            })}
+          </time>
+          <span>{post.data.author}</span>
+          <span>4 min</span>
+        </div>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: RichText.asHtml(post.data.content[0].body),
+          }}
+        />
+      </main>
+    </article>
+  );
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  // const prismic = getPrismicClient();
-  // const posts = await prismic.query(TODO);
+  const prismic = getPrismicClient();
+  const posts = await prismic.query(
+    Prismic.Predicates.at('document.type', 'posts')
+  );
+
+  const paths = posts.results.map(post => {
+    return { params: { slug: post.uid } };
+  });
 
   return {
-    paths: [],
+    paths,
     fallback: 'blocking',
   };
-  // TODO
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
@@ -46,8 +86,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const prismic = getPrismicClient();
   const response = await prismic.getByUID('posts', String(slug), {});
 
-  console.log(response);
   return {
-    props: {},
+    props: {
+      post: response,
+    },
   };
 };

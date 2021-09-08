@@ -1,4 +1,5 @@
 import { GetStaticProps } from 'next';
+import Link from 'next/link';
 
 import Prismic from '@prismicio/client';
 import { RichText } from 'prismic-dom';
@@ -32,14 +33,18 @@ export default function Home({ postsPagination }: HomeProps) {
   return (
     <main className={`${commonStyles.content} ${styles.content}`}>
       {results.map(post => (
-        <a key={post.uid}>
-          <h1>{post.data.title}</h1>
-          <h2>{post.data.subtitle}</h2>
-          <h2>{post.first_publication_date}</h2>
-          <h2>{post.data.author}</h2>
-        </a>
+        <Link href={`/post/${post.uid}`} key={post.uid}>
+          <a>
+            <h1>{post.data.title}</h1>
+            <h2>{post.data.subtitle}</h2>
+            <h2>{post.first_publication_date}</h2>
+            <h2>{post.data.author}</h2>
+          </a>
+        </Link>
       ))}
-      <button type="button">Carregar mais posts</button>
+      {postsPagination.next_page && (
+        <button type="button">Carregar mais posts</button>
+      )}
     </main>
   );
 }
@@ -68,11 +73,10 @@ export const getStaticProps: GetStaticProps = async () => {
     };
   });
 
-  // TODO
   return {
     props: {
       postsPagination: {
-        nextPage: 2,
+        nextPage: postsResponse.next_page,
         results: posts,
       },
     },
