@@ -1,5 +1,6 @@
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
+import { FiCalendar, FiUser } from 'react-icons/fi';
 
 import Prismic from '@prismicio/client';
 import { format } from 'date-fns';
@@ -40,19 +41,27 @@ export default function Home({ postsPagination }: HomeProps) {
     setNextPage(next_page);
   }
 
+  console.log(posts);
+
   return (
     <main className={`${commonStyles.content} ${styles.content}`}>
       {posts.map(post => (
         <Link href={`/post/${post.uid}`} key={post.uid}>
           <a>
-            <h1>{post.data.title}</h1>ASASDAFS
+            <h1>{post.data.title}</h1>
             <h2>{post.data.subtitle}</h2>
-            <h2>
-              {format(new Date(post.first_publication_date), 'dd MMM yyyy', {
-                locale: ptBR,
-              })}
-            </h2>
-            <h2>{post.data.author}</h2>
+            <div className={styles.info}>
+              <span>
+                <FiCalendar />
+                {format(new Date(post.first_publication_date), 'dd MMM yyyy', {
+                  locale: ptBR,
+                })}
+              </span>
+              <span>
+                <FiUser />
+                {post.data.author}
+              </span>
+            </div>
           </a>
         </Link>
       ))}
@@ -70,7 +79,7 @@ export const getStaticProps: GetStaticProps = async () => {
   const postsResponse = await prismic.query(
     Prismic.Predicates.at('document.type', 'posts'),
     {
-      fetch: ['posts.title', 'posts.content'],
+      fetch: ['posts.title', 'posts.content', 'posts.author', 'posts.subtitle'],
       pageSize: 1,
       page: 1,
     }
