@@ -30,18 +30,16 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-export default function Home({ postsPagination }: HomeProps) {
+export default function Home({ postsPagination }: HomeProps): JSX.Element {
   const { results: resultsProps, next_page: nextPageProps } = postsPagination;
   const [posts, setPosts] = useState(resultsProps);
   const [nextPage, setNextPage] = useState(nextPageProps);
 
-  async function loadMorePosts() {
+  async function loadMorePosts(): Promise<void> {
     const { next_page, results } = await (await fetch(nextPage)).json();
     setPosts([...posts, ...results]);
     setNextPage(next_page);
   }
-
-  console.log(posts);
 
   return (
     <main className={`${commonStyles.content} ${styles.content}`}>

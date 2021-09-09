@@ -1,4 +1,3 @@
-/* eslint-disable react/no-danger */
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Prismic from '@prismicio/client';
 import { useRouter } from 'next/router';
@@ -32,7 +31,7 @@ interface PostProps {
   post: Post;
 }
 
-export default function Post({ post }: PostProps) {
+export default function Post({ post }: PostProps): JSX.Element {
   const { isFallback } = useRouter();
   if (isFallback)
     return <div className={commonStyles.content}>Carregando...</div>;
