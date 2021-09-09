@@ -2,7 +2,8 @@ import { GetStaticProps } from 'next';
 import Link from 'next/link';
 
 import Prismic from '@prismicio/client';
-import { RichText } from 'prismic-dom';
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
@@ -29,7 +30,9 @@ interface HomeProps {
 
 export default function Home({ postsPagination }: HomeProps) {
   // TODO
-  const { results } = postsPagination;
+  const { results, next_page } = postsPagination;
+  console.log(next_page);
+
   return (
     <main className={`${commonStyles.content} ${styles.content}`}>
       {results.map(post => (
@@ -37,7 +40,11 @@ export default function Home({ postsPagination }: HomeProps) {
           <a>
             <h1>{post.data.title}</h1>
             <h2>{post.data.subtitle}</h2>
-            <h2>{post.first_publication_date}</h2>
+            <h2>
+              {format(new Date(post.first_publication_date), 'dd MMM yyyy', {
+                locale: ptBR,
+              })}
+            </h2>
             <h2>{post.data.author}</h2>
           </a>
         </Link>
@@ -60,24 +67,11 @@ export const getStaticProps: GetStaticProps = async () => {
     }
   );
 
-  const posts = postsResponse.results.map(post => {
-    return {
-      ...post,
-      first_publication_date: new Date(
-        post.last_publication_date
-      ).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-      }),
-    };
-  });
-
   return {
     props: {
       postsPagination: {
-        nextPage: postsResponse.next_page,
-        results: posts,
+        next_page: postsResponse.next_page,
+        results: postsResponse.results,
       },
     },
   };

@@ -37,6 +37,10 @@ export default function Post({ post }: PostProps) {
   if (isFallback)
     return <div className={commonStyles.content}>Carregando...</div>;
 
+  const words = post.data.content.reduce((acc, content) => {
+    return acc + RichText.asText(content.body).split(' ').length;
+  }, 0);
+
   return (
     <article className={commonStyles.content}>
       <img
@@ -53,13 +57,18 @@ export default function Post({ post }: PostProps) {
             })}
           </time>
           <span>{post.data.author}</span>
-          <span>4 min</span>
+          <span>{Math.ceil(Number(words / 200))} min</span>
         </div>
-        <div
-          dangerouslySetInnerHTML={{
-            __html: RichText.asHtml(post.data.content[0].body),
-          }}
-        />
+        {post.data.content.map(content => (
+          <div key={content.heading}>
+            <span>{content.heading}</span>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: RichText.asHtml(content.body),
+              }}
+            />
+          </div>
+        ))}
       </main>
     </article>
   );
