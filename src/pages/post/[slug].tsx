@@ -111,7 +111,7 @@ export default function Post({ post, preview }: PostProps): JSX.Element {
       <div id="inject-utterances" />
 
       {preview && (
-        <aside>
+        <aside className={commonStyles.exitPreview}>
           <Link href="/api/exit-preview">
             <a>Sair do modo Preview</a>
           </Link>

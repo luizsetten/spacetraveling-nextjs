@@ -73,7 +73,7 @@ export default function Home({
         </button>
       )}
       {preview && (
-        <aside>
+        <aside className={commonStyles.exitPreview}>
           <Link href="/api/exit-preview">
             <a>Sair do modo Preview</a>
           </Link>

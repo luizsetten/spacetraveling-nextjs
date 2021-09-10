@@ -7,3 +7,24 @@
     margin: 0 2rem;
   }
 }
+
+.exitPreview {
+  margin: 2rem auto;
+  display: flex;
+  justify-content: center;
+
+  a {
+    background: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    color: var(--highlight);
+    font-size: 1.2rem;
+    font-weight: bold;
+
+    transition: 0.2s filter;
+
+    &:hover {
+      filter: brightness(0.8);
+    }
+  }
+}
