@@ -15,6 +15,7 @@ import styles from './post.module.scss';
 
 interface Post {
   first_publication_date: string | null;
+  last_publication_date: string | null;
   data: {
     title: string;
     banner: {
@@ -80,6 +81,18 @@ export default function Post({ post, preview }: PostProps): JSX.Element {
             </span>
             <span>{Math.ceil(Number(words / 200))} min</span>
           </div>
+          {post.last_publication_date && (
+            <time>
+              * editado em{' '}
+              {format(
+                new Date(post.last_publication_date),
+                'dd MMM yyyy, às hh:mm',
+                {
+                  locale: ptBR,
+                }
+              )}
+            </time>
+          )}
           {post.data.content.map(content => (
             <div key={content.heading}>
               <span>{content.heading}</span>
