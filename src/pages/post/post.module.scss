@@ -1,6 +1,36 @@
-// TODO
 .banner {
   max-width: 100%;
   max-height: 400px;
   margin: 0 auto;
+}
+
+.content {
+  max-width: 60vw;
+  margin: 0 auto;
+
+  @media (max-width: 720px) {
+    max-width: 540px;
+    margin: 0 2rem;
+  }
+
+  h1 {
+    margin: 2rem 0 0.8rem;
+    font-size: 3rem;
+    font-weight: bold;
+  }
+}
+
+.info {
+  color: var(--body);
+  margin: 0 0 3rem;
+
+  span,
+  time {
+    font-size: 1.2rem;
+    margin: 0 2rem 0 0;
+
+    svg {
+      margin: 0 0.5rem 0 0;
+    }
+  }
 }

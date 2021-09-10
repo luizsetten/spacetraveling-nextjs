@@ -7,7 +7,7 @@ import { RichText } from 'prismic-dom';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
-import { FiCalendar, FiUser } from 'react-icons/fi';
+import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
 import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
@@ -79,7 +79,10 @@ export default function Post({ post, preview }: PostProps): JSX.Element {
               <FiUser />
               {post.data.author}
             </span>
-            <span>{Math.ceil(Number(words / 200))} min</span>
+            <span>
+              <FiClock />
+              {Math.ceil(Number(words / 200))} min
+            </span>
           </div>
           {post.last_publication_date && (
             <time>
