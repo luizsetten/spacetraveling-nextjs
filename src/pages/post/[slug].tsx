@@ -16,6 +16,14 @@ import styles from './post.module.scss';
 interface Post {
   first_publication_date: string | null;
   last_publication_date: string | null;
+  nextPost: {
+    title: string;
+    slug: string;
+  };
+  previousPost: {
+    title: string;
+    slug: string;
+  };
   data: {
     title: string;
     banner: {
@@ -39,6 +47,8 @@ interface PostProps {
 export default function Post({ post, preview }: PostProps): JSX.Element {
   const { isFallback } = useRouter();
 
+  const { nextPost, previousPost } = post;
+
   useEffect(() => {
     const script = document.createElement('script');
     const anchor = document.getElementById('inject-utterances');
@@ -59,14 +69,14 @@ export default function Post({ post, preview }: PostProps): JSX.Element {
   }, 0);
 
   return (
-    <>
+    <div className={styles.content}>
       <article className={commonStyles.content}>
         <img
           src={post.data.banner.url}
           alt={post.data.title}
           className={styles.banner}
         />
-        <main className={styles.content}>
+        <main>
           <h1>{post.data.title}</h1>
           <div className={styles.info}>
             <time>
@@ -108,6 +118,26 @@ export default function Post({ post, preview }: PostProps): JSX.Element {
           ))}
         </main>
       </article>
+      <div className={styles.pagination}>
+        {previousPost ? (
+          <div>
+            <span>{previousPost.title}</span>
+            <Link href={`/post/${previousPost.slug}`}>
+              <a>Post anterior</a>
+            </Link>
+          </div>
+        ) : (
+          <div />
+        )}
+        {nextPost && (
+          <div className={styles.next}>
+            <span>{nextPost.title}</span>
+            <Link href={`/post/${nextPost.slug}`}>
+              <a>Próximo post</a>
+            </Link>
+          </div>
+        )}
+      </div>
       <div id="inject-utterances" />
 
       {preview && (
@@ -117,7 +147,7 @@ export default function Post({ post, preview }: PostProps): JSX.Element {
           </Link>
         </aside>
       )}
-    </>
+    </div>
   );
 }
 
@@ -144,14 +174,37 @@ export const getStaticProps: GetStaticProps = async ({
 }) => {
   const { slug } = params;
   const prismic = getPrismicClient();
-  const response =
-    (await prismic.getByUID('posts', String(slug), {
-      ref: previewData?.ref ?? null,
-    })) || null;
+
+  const posts = await prismic.query(
+    Prismic.Predicates.at('document.type', 'posts')
+  );
+
+  const postsWithExtra = posts.results.map((post, index, arr) => {
+    if (post.uid === String(slug))
+      return {
+        ...post,
+        nextPost: arr[index + 1]
+          ? {
+              title: arr[index + 1]?.data?.title,
+              slug: arr[index + 1]?.uid,
+            }
+          : null,
+        previousPost: arr[index - 1]
+          ? {
+              title: arr[index - 1]?.data?.title,
+              slug: arr[index - 1]?.uid,
+            }
+          : null,
+        ref: previewData?.ref ?? null,
+      };
+    return post;
+  });
+
+  const result = postsWithExtra.find(post => post.uid === String(slug));
 
   return {
     props: {
-      post: response,
+      post: result,
       preview,
     },
   };
