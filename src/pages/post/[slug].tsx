@@ -68,6 +68,8 @@ export default function Post({ post, preview }: PostProps): JSX.Element {
     return acc + RichText.asText(content.body).split(' ').length;
   }, 0);
 
+  console.log(post);
+
   return (
     <div className={styles.content}>
       <article className={commonStyles.content}>
@@ -79,33 +81,37 @@ export default function Post({ post, preview }: PostProps): JSX.Element {
         <main>
           <h1>{post.data.title}</h1>
           <div className={styles.info}>
-            <time>
-              <FiCalendar />
-              {format(new Date(post.first_publication_date), 'dd MMM yyyy', {
-                locale: ptBR,
-              })}
-            </time>
-            <span>
-              <FiUser />
-              {post.data.author}
-            </span>
-            <span>
-              <FiClock />
-              {Math.ceil(Number(words / 200))} min
-            </span>
-          </div>
-          {post.last_publication_date && (
-            <time>
-              * editado em{' '}
-              {format(
-                new Date(post.last_publication_date),
-                'dd MMM yyyy, às hh:mm',
-                {
+            <div>
+              <time>
+                <FiCalendar />
+                {format(new Date(post.first_publication_date), 'dd MMM yyyy', {
                   locale: ptBR,
-                }
-              )}
-            </time>
-          )}
+                })}
+              </time>
+              <span>
+                <FiUser />
+                {post.data.author}
+              </span>
+              <span>
+                <FiClock />
+                {Math.ceil(Number(words / 200))} min
+              </span>
+            </div>
+            {post.last_publication_date && (
+              <div className={styles.edit}>
+                <time>
+                  * editado em{' '}
+                  {format(
+                    new Date(post.last_publication_date),
+                    "dd MMM yyyy, 'às' hh:mm",
+                    {
+                      locale: ptBR,
+                    }
+                  )}
+                </time>
+              </div>
+            )}
+          </div>
           {post.data.content.map(content => (
             <div key={content.heading}>
               <span>{content.heading}</span>
